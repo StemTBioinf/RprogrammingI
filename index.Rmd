@@ -1,5 +1,5 @@
 ---
-title: "Test12"
+title: "Foundations of R programming I"
 author: "Shamit Soneji"
 date: "12/10/2018"
 output: rmarkdown::github_document
