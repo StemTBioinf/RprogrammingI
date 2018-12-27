@@ -286,4 +286,191 @@ boxplot(yst.zs,las=2)
 ```
 
 We can see now the data has been centralised around 0. This transformation is particularly useful when we want to cluster the data.
+8- Clustering
+====================
+
+Clustering is one of the most common visualisation techniques for expression data. Here we will learn how to do some basic clustering and plotting. The first thing we need to do is take the yeast data and reduce it a little first using some commands you have already learnt. 
+
+***Exercise:*** Plot a histogram of the expression values in the yeast data. Remove any row where the maximum value does not exceed a value of 7. When you have done this calculate the standard deviation of each row, and remove any gene where its sd is less than 0.5. Put the final reduced matrix into an object called `yst.20pc.filt`, and then zscore this data into an object called `yst.20pc.filt.z`. Hint: `apply` and `which` are your friends here.
+
+***Bonus exercise!:*** If you are done with the above, make a function to filter data which takes a mean and sd as variables.
+
+```{r}
+
+max.ind <- which(apply(yst.20pc,1,max)<7)
+sd.ind <-  which(apply(yst.20pc,1,sd)<0.5)
+
+rem.ind <- intersect(max.ind,sd.ind)
+
+yst.20pc.filt <- yst.20pc[-rem.ind,]
+yst.20pc.filt.z <- t(apply(yst.20pc.filt,1,zscore))
+
+```
+
+Lets cluster. R has many ways to do this, an many packages have been written specifically for array data. We are not going to use these for now, but concentrate on the basic functions which underly the more specialised packages. For example, the `gplots` package uses the `hclust` function which is provided by R. So we will use `hclust` for now.
+
+To use `hclust` we need to provide a distance matrix. This is done using the `dist` function:
+
+```{r}
+yst.dst <- dist(yst.20pc.filt.z)
+```
+
+The we cluster using `hclust`:
+
+```{r}
+yst.hc <- hclust(yst.dst)
+```
+
+Plot the dendrogram:
+
+```{r}
+plot(yst.hc)
+```
+
+We can see this is pretty much useless. It is far to compact and doesn't really tell us anything. What we would like is to make a heatmap, and to do this we need to retrieve some information created by `hclust`
+
+Call `names` to see which information is available in the newly created object:
+
+```{r}
+names(yst.hc)
+```
+
+What we need here is the component called `order`. We can get this using the `$` assignment.
+
+```{r}
+yst.hc$order[1:20] #just the first 20! remove `[1:20]` for the full vector
+```
+
+We use this to reorder the z-scored matrix:
+
+```{r}
+yst.hc.data <- yst.20pc.filt.z[yst.hc$order,]
+```
+
+To make a heatmap of the data call `image`:
+
+```{r}
+image(yst.hc.data)
+```
+Ok, this doesn't look like it should! The matrix is the wrong way round, the colours aren't right, and there are no labels. The downside to R is that getting all this done takes time and knowledge of R's plotting capabilities. Thankfully people have already done this and put the code into pakages for people to download and use.
+
+***Exercise:*** Install the `gplots` package.
+
+To use the functions provided by gplots we have to load it first:
+
+```{r}
+library(gplots)
+```
+
+We can now use the `heatmap.2` function which `gplots` provides:
+```{r}
+heatmap.2(yst.20pc.filt.z,col=greenred(20),trace="none",dendrogram=c("row"),Colv=FALSE)
+```
+
+***Exercise:*** Look/play with this command to work out what each of these options are.
+
+Clustering is pretty pointless if you can't define groups and get to the gene names. To do this we need to cut the dendrogram. We do this using the `cutree` function. For example, if we want 4 groups we do:
+
+```{r}
+yst.hc.4grp <- cutree(yst.hc,k=4)
+```
+
+This produces a vector showing which cluster each gene belongs to. If we are happy with this number of clusters we can make our lives a bit easier and put the data and the cluster assignments into the same object:
+
+```{r}
+yst.lst <- list(data=yst.20pc.filt.z,cluster=yst.hc.4grp)
+```
+
+
+We can now plot all the genes which belong to cluster number 1 for example:
+```{r}
+yst.c1 <- yst.lst$data[which(yst.lst$cluster==1),]
+plot(yst.c1[1,],ty="l",ylim=range(yst.c1))
+apply(yst.c1,1,lines)
+```
+
+***Exercise:*** Rewrite the code above into a function called `plot.cluster` so you can plot the genes of any given cluster.
+
+We can now write a function to plot all the clusters at the same time:
+
+
+```{r,echo=FALSE}
+
+plot.cluster <- function(m,clus){
+  
+  m.c1 <- m$data[which(m$cluster==clus),]
+  plot(m.c1[1,],ty="l",ylim=range(m.c1))
+  apply(m.c1,1,lines)
+}
+
+```
+
+```{r}
+plot.all.clusters <- function(m){
+
+ cls <- ceiling(sqrt(max(m$cluster)))
+ rs <- ceiling(max(m$cluster)/cls)
+
+ par(mfrow=c(rs,cls)) 
+
+ for(i in 1:max(m$cluster)){
+   plot.cluster(m,i)
+ }
+}
+
+```
+
+Now run it:
+
+```{r}
+plot.all.clusters(yst.lst)
+```
+
+This doesn't look good. The black lines cross each other frequently making the overal pattern hard to see.
+
+***Exercise:*** Make two new functions based on the ones above which plot the clusters using boxplots instead of lines.
+
+```{r}
+plot.box.cluster <- function(m,clus){
+  
+  m.cl <- m$data[which(m$cluster==clus),]
+  
+  boxplot(m.cl,las=2)
+}
+
+plot.all.boxclusters <- function(m){
+
+ cls <- ceiling(sqrt(max(m$cluster)))
+ rs <- ceiling(max(m$cluster)/cls)
+
+ par(mfrow=c(rs,cls)) 
+
+ for(i in 1:max(m$cluster)){
+   plot.box.cluster(m,i)
+ }
+}
+
+plot.all.boxclusters(yst.lst)
+```
+
+Lets try a faster method for clustering called k-means. Here we need to specify up front how many clusters we are looking for.
+
+```{r}
+
+yst.km <- kmeans(yst.20pc.filt.z,9)
+yst.km.lst <- list(data=yst.20pc.filt.z,cluster=yst.km$cluster)
+plot.all.boxclusters(yst.km.lst)
+
+```
+
+We'll now learn about exporting figures from R. This can be done from Rstudio using the export function, but it is better not to use this. I will explian at a later date why, but this is how you code to output to a png file:
+
+```{r}
+
+png("Kmeans_boxplot.png",height=800,width=1000) #opens the file
+plot.all.boxclusters(yst.km.lst) #makes the plot and pipes it to the file
+dev.off() #closes the pipe and finalises the file
+
+```
+
 

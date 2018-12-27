@@ -237,21 +237,21 @@ listex1$char
 listex1$nums
 ```
 
-    ##            [,1]        [,2]        [,3]        [,4]        [,5]
-    ## [1,] -0.7077838  0.59218380  0.14112945  1.53181918  0.39354272
-    ## [2,] -0.2795684  0.43165367  0.40928033 -0.09216268  2.40373756
-    ## [3,] -0.4664887  1.18777180 -1.05414865 -0.46526350  1.54306885
-    ## [4,] -0.4652063  0.96243726 -1.03891519 -0.36548542 -0.08898449
-    ## [5,]  0.1796974  0.62541354  1.23312580  0.91655493  1.26404728
-    ## [6,]  1.2365749  0.01987371  1.02335777 -1.27464526  0.52628107
-    ## [7,] -0.8052876 -0.20344822  0.05462278 -2.07448447  1.16689108
-    ## [8,]  0.1068559  0.84296458 -0.40922802  0.26864080 -0.07623064
+    ##             [,1]       [,2]       [,3]       [,4]       [,5]
+    ## [1,] -0.05574741 -1.3186195 -1.7044530  0.3692148  1.0530166
+    ## [2,]  0.04903236  0.5918718  0.5837749 -1.3025486  0.8781515
+    ## [3,] -0.78666843 -1.5326335 -0.2668207  0.1188631 -0.9717622
+    ## [4,]  0.36902449 -2.2358790  1.1889324  0.8519052 -0.4585625
+    ## [5,] -0.41087238 -1.1752485  0.7210610 -0.2993388 -0.9636785
+    ## [6,]  0.31258946 -1.3952606 -0.2112706  1.7098805 -0.9559865
+    ## [7,]  0.54938542 -0.3867992  0.1650768 -0.2372719 -0.6736085
+    ## [8,]  0.70350128  2.3722286 -1.7727717 -0.4760884 -1.1308404
 
 ``` r
 listex1$nums[1,] # the matrix within the list issubsetted as before
 ```
 
-    ## [1] -0.7077838  0.5921838  0.1411295  1.5318192  0.3935427
+    ## [1] -0.05574741 -1.31861953 -1.70445299  0.36921483  1.05301656
 
 Another way of doing the above is:
 
@@ -265,21 +265,21 @@ listex1[[1]] # note the double square brackets
 listex1[[2]]
 ```
 
-    ##            [,1]        [,2]        [,3]        [,4]        [,5]
-    ## [1,] -0.7077838  0.59218380  0.14112945  1.53181918  0.39354272
-    ## [2,] -0.2795684  0.43165367  0.40928033 -0.09216268  2.40373756
-    ## [3,] -0.4664887  1.18777180 -1.05414865 -0.46526350  1.54306885
-    ## [4,] -0.4652063  0.96243726 -1.03891519 -0.36548542 -0.08898449
-    ## [5,]  0.1796974  0.62541354  1.23312580  0.91655493  1.26404728
-    ## [6,]  1.2365749  0.01987371  1.02335777 -1.27464526  0.52628107
-    ## [7,] -0.8052876 -0.20344822  0.05462278 -2.07448447  1.16689108
-    ## [8,]  0.1068559  0.84296458 -0.40922802  0.26864080 -0.07623064
+    ##             [,1]       [,2]       [,3]       [,4]       [,5]
+    ## [1,] -0.05574741 -1.3186195 -1.7044530  0.3692148  1.0530166
+    ## [2,]  0.04903236  0.5918718  0.5837749 -1.3025486  0.8781515
+    ## [3,] -0.78666843 -1.5326335 -0.2668207  0.1188631 -0.9717622
+    ## [4,]  0.36902449 -2.2358790  1.1889324  0.8519052 -0.4585625
+    ## [5,] -0.41087238 -1.1752485  0.7210610 -0.2993388 -0.9636785
+    ## [6,]  0.31258946 -1.3952606 -0.2112706  1.7098805 -0.9559865
+    ## [7,]  0.54938542 -0.3867992  0.1650768 -0.2372719 -0.6736085
+    ## [8,]  0.70350128  2.3722286 -1.7727717 -0.4760884 -1.1308404
 
 ``` r
 listex1[[2]][1,]
 ```
 
-    ## [1] -0.7077838  0.5921838  0.1411295  1.5318192  0.3935427
+    ## [1] -0.05574741 -1.31861953 -1.70445299  0.36921483  1.05301656
 
 4- Reading and writing files
 ============================
@@ -453,4 +453,201 @@ boxplot(yst.zs,las=2)
 
 ![](index_files/figure-markdown_github/unnamed-chunk-28-1.png)
 
-We can see now the data has been centralised around 0. This transformation is particularly useful when we want to cluster the data.
+We can see now the data has been centralised around 0. This transformation is particularly useful when we want to cluster the data. 8- Clustering ====================
+
+Clustering is one of the most common visualisation techniques for expression data. Here we will learn how to do some basic clustering and plotting. The first thing we need to do is take the yeast data and reduce it a little first using some commands you have already learnt.
+
+***Exercise:*** Plot a histogram of the expression values in the yeast data. Remove any row where the maximum value does not exceed a value of 7. When you have done this calculate the standard deviation of each row, and remove any gene where its sd is less than 0.5. Put the final reduced matrix into an object called `yst.20pc.filt`, and then zscore this data into an object called `yst.20pc.filt.z`. Hint: `apply` and `which` are your friends here.
+
+***Bonus exercise!:*** If you are done with the above, make a function to filter data which takes a mean and sd as variables.
+
+``` r
+max.ind <- which(apply(yst.20pc,1,max)<7)
+sd.ind <-  which(apply(yst.20pc,1,sd)<0.5)
+
+rem.ind <- intersect(max.ind,sd.ind)
+
+yst.20pc.filt <- yst.20pc[-rem.ind,]
+yst.20pc.filt.z <- t(apply(yst.20pc.filt,1,zscore))
+```
+
+Lets cluster. R has many ways to do this, an many packages have been written specifically for array data. We are not going to use these for now, but concentrate on the basic functions which underly the more specialised packages. For example, the `gplots` package uses the `hclust` function which is provided by R. So we will use `hclust` for now.
+
+To use `hclust` we need to provide a distance matrix. This is done using the `dist` function:
+
+``` r
+yst.dst <- dist(yst.20pc.filt.z)
+```
+
+The we cluster using `hclust`:
+
+``` r
+yst.hc <- hclust(yst.dst)
+```
+
+Plot the dendrogram:
+
+``` r
+plot(yst.hc)
+```
+
+![](index_files/figure-markdown_github/unnamed-chunk-32-1.png)
+
+We can see this is pretty much useless. It is far to compact and doesn't really tell us anything. What we would like is to make a heatmap, and to do this we need to retrieve some information created by `hclust`
+
+Call `names` to see which information is available in the newly created object:
+
+``` r
+names(yst.hc)
+```
+
+    ## [1] "merge"       "height"      "order"       "labels"      "method"     
+    ## [6] "call"        "dist.method"
+
+What we need here is the component called `order`. We can get this using the `$` assignment.
+
+``` r
+yst.hc$order[1:20] #just the first 20! remove `[1:20]` for the full vector
+```
+
+    ##  [1] 2852 4543 3230  531 1082 3078 2236 4011  286 3461 1784 2835 2210 3137
+    ## [15] 5098   51 3048 3058 1241 3164
+
+We use this to reorder the z-scored matrix:
+
+``` r
+yst.hc.data <- yst.20pc.filt.z[yst.hc$order,]
+```
+
+To make a heatmap of the data call `image`:
+
+``` r
+image(yst.hc.data)
+```
+
+![](index_files/figure-markdown_github/unnamed-chunk-36-1.png) Ok, this doesn't look like it should! The matrix is the wrong way round, the colours aren't right, and there are no labels. The downside to R is that getting all this done takes time and knowledge of R's plotting capabilities. Thankfully people have already done this and put the code into pakages for people to download and use.
+
+***Exercise:*** Install the `gplots` package.
+
+To use the functions provided by gplots we have to load it first:
+
+``` r
+library(gplots)
+```
+
+    ## 
+    ## Attaching package: 'gplots'
+
+    ## The following object is masked from 'package:stats':
+    ## 
+    ##     lowess
+
+We can now use the `heatmap.2` function which `gplots` provides:
+
+``` r
+heatmap.2(yst.20pc.filt.z,col=greenred(20),trace="none",dendrogram=c("row"),Colv=FALSE)
+```
+
+![](index_files/figure-markdown_github/unnamed-chunk-38-1.png)
+
+***Exercise:*** Look/play with this command to work out what each of these options are.
+
+Clustering is pretty pointless if you can't define groups and get to the gene names. To do this we need to cut the dendrogram. We do this using the `cutree` function. For example, if we want 4 groups we do:
+
+``` r
+yst.hc.4grp <- cutree(yst.hc,k=4)
+```
+
+This produces a vector showing which cluster each gene belongs to. If we are happy with this number of clusters we can make our lives a bit easier and put the data and the cluster assignments into the same object:
+
+``` r
+yst.lst <- list(data=yst.20pc.filt.z,cluster=yst.hc.4grp)
+```
+
+We can now plot all the genes which belong to cluster number 1 for example:
+
+``` r
+yst.c1 <- yst.lst$data[which(yst.lst$cluster==1),]
+plot(yst.c1[1,],ty="l",ylim=range(yst.c1))
+apply(yst.c1,1,lines)
+```
+
+![](index_files/figure-markdown_github/unnamed-chunk-41-1.png)
+
+    ## NULL
+
+***Exercise:*** Rewrite the code above into a function called `plot.cluster` so you can plot the genes of any given cluster.
+
+We can now write a function to plot all the clusters at the same time:
+
+``` r
+plot.all.clusters <- function(m){
+
+ cls <- ceiling(sqrt(max(m$cluster)))
+ rs <- ceiling(max(m$cluster)/cls)
+
+ par(mfrow=c(rs,cls)) 
+
+ for(i in 1:max(m$cluster)){
+   plot.cluster(m,i)
+ }
+}
+```
+
+Now run it:
+
+``` r
+plot.all.clusters(yst.lst)
+```
+
+![](index_files/figure-markdown_github/unnamed-chunk-44-1.png)
+
+This doesn't look good. The black lines cross each other frequently making the overal pattern hard to see.
+
+***Exercise:*** Make two new functions based on the ones above which plot the clusters using boxplots instead of lines.
+
+``` r
+plot.box.cluster <- function(m,clus){
+  
+  m.cl <- m$data[which(m$cluster==clus),]
+  
+  boxplot(m.cl,las=2)
+}
+
+plot.all.boxclusters <- function(m){
+
+ cls <- ceiling(sqrt(max(m$cluster)))
+ rs <- ceiling(max(m$cluster)/cls)
+
+ par(mfrow=c(rs,cls)) 
+
+ for(i in 1:max(m$cluster)){
+   plot.box.cluster(m,i)
+ }
+}
+
+plot.all.boxclusters(yst.lst)
+```
+
+![](index_files/figure-markdown_github/unnamed-chunk-45-1.png)
+
+Lets try a faster method for clustering called k-means. Here we need to specify up front how many clusters we are looking for.
+
+``` r
+yst.km <- kmeans(yst.20pc.filt.z,9)
+yst.km.lst <- list(data=yst.20pc.filt.z,cluster=yst.km$cluster)
+plot.all.boxclusters(yst.km.lst)
+```
+
+![](index_files/figure-markdown_github/unnamed-chunk-46-1.png)
+
+We'll now learn about exporting figures from R. This can be done from Rstudio using the export function, but it is better not to use this. I will explian at a later date why, but this is how you code to output to a png file:
+
+``` r
+png("Kmeans_boxplot.png",height=800,width=1000) #opens the file
+plot.all.boxclusters(yst.km.lst) #makes the plot and pipes it to the file
+dev.off() #closes the pipe and finalises the file
+```
+
+    ## quartz_off_screen 
+    ##                 2
