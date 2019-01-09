@@ -143,27 +143,55 @@ listex1[[2]][1,]
 
 4- Reading and writing files
 ==========================
-To analyse data in R, you have to get the data into R first (this helps a lot). R has some useful functions to do this, so now we can take our first look at some microarray data. Download this file (http://bone.bmc.lu.se/Public/Yeast_O2_Averaged.txt) and save it to your current working directory.
+To analyse data in R, you have to get the data into R first (this helps a lot). R has some useful functions to do this, so now we can take our first look at some microarray data. Download this file (http://bone.bmc.lu.se/Public/Mouse_HSPC_reduced.txt) and save it to your current working directory.
 
 ***Exercise:*** Open the file to see how it looks, and then call `help(read.delim)` and try to work out how the file you are looking at could be read into R.
 
 This is how I would do it:
 
 ```{r}
-yst.data <- read.delim("Yeast_O2_Averaged.txt",header=T,row.name=1,sep="\t")
-colnames(yst.data) # view the column names
-nrow(yst.data) # the number of rows in the dataset
-ncol(yst.data) # number of columns
-dim(yst.data) # number of rows and columns together
+hspc.data <- read.delim("Mouse_HSPC_reduced.txt",header=T,row.name=1,sep="\t")
+colnames(hspc.data) # view the column names
+nrow(hspc.data) # the number of rows in the dataset
+ncol(hspc.data) # number of columns
+dim(hspc.data) # number of rows and columns together
+colnames(hspc.data) #output the columns headers
 ```
 
-***Exercise:*** Using subsetting we learnt about earlier, split this table into two parts called `yst.1pc` and `yst.20pc` to separate the 1% and 20% data shown in the headings. When you have done this, write these two matricies out into two separate files. 
+***Exercise:*** Using subsetting we learnt about earlier, split this data matrix into three parts called `lthsc`, `mep` and `gmp` to separate the cell types shown in the headings. For this look at the help page for a function called `grep`.
 
 ```{r}
-yst.20pc <- as.matrix(yst.data[,8:14])
+lthsc <- hspc.data[,grep("LTHSC",colnames(hspc.data))]
+mep <- hspc.data[,grep("MEP",colnames(hspc.data))]
+gmp <- hspc.data[,grep("GMP",colnames(hspc.data))]
 ```
 
-There is a nicer way of doing it using `grep`.
+To write a table use the `write.table` function:
+```{r}
+write.table(lthsc,"LTHSC_data.txt",row.names=T,col.names=NA,sep="\t",quote=F)
+```
+
+***Exercise:*** Write out the data for the MEP and GMP data into two files.
+
+The data tables we have now are in the form of a data.frame. Try@
+
+```{r}
+class(mep)
+```
+This can be an awkward format for some operations so we can conver it to a simple matrix first:
+
+```{r}
+hspc.data <- as.matrix(hspc.data)
+lthsc <- as.matrix(lthsc)
+mep <- as.matrix(mep)
+gmp <- as.matrix(mep)
+
+```
+
+Try this now:
+```{r}
+class(mep)
+```
 
 ### 5- Flow control and Functions
 
@@ -179,8 +207,8 @@ for(i in 1:10){
 To translate this code, it simply says for every integer from 1 to 10, print this value to the screen.
 
 ***Exercises:*** 
-- Using the example above, print the first 10 lines of `yst.1pc` in a `for` loop.
-- Print every 2nd line of `yst.1pc` from lines 1 to 50.
+- Using the example above, print the first 10 lines of `lthcs` in a `for` loop.
+- Print every 2nd line of `mep` from lines 1 to 50.
 
 An important point regarding `for` loops is that any processes/calculations occurring within the loop will stay in the loop. If data generated within a loop has to be retained, we need to create a container to "fill up" while the loop is being carried out.
 
@@ -192,41 +220,50 @@ for(i in 1:10){
 ```
 The container `vec` is initialised outside the loop, and then populated by concatenating on to it after every iteration of the loop.
 
-***Exercise:*** Initialise as many empty containers as needed, and for `yst.1pc`, calculate the mean and standard devation of each row, and store the results in the containers you made.
+***Exercise:*** Initialise an empty container, and for `gmp`, calculate the mean of each row (gene), and store the results in the containers you made.
 
-We will now take a look at *functions*. As an example, lets turn the code you wrote in the exercise above into a function.
+```{r}
+
+gmp.row.mean <- NULL
+
+for(i in 1:nrow(gmp)){
+  gmp.row.mean <- c(gmp.row.mean,mean(gmp[i,]))
+}
+```
+
+We will now take a look at *functions*. As an example, lets turn the code you wrote in the exercise above into a function where we also calculate the variance for a gene too.
 
 ```{r}
 
 calc.mean.and.sd <- function(mat){
   
   mn <- NULL
-  sdev <- NULL
+  vr <- NULL
   
   for(i in 1:nrow(mat)){  
       mn <- c(mn,mean(mat[i,]))
-      sdev <- c(sdev,sd(mat[i,]))
+      vr <- c(vr,var(mat[i,]))
     
   }
-  res <- list(mn=mn,sdev=sdev)
+  res <- list(mns=mn,vars=vr)
   res # the last line in a function is what the function will return
 }
 
 ```
-By putting this code into a function we can now calculate the means and deviations of any matrix. For example, `yst.20pc` which we haven't done yet:
+By putting this code into a function we can now calculate the means and deviations of any matrix. For example, `gmp`:
 
 ```{r}
-yst.20pc.mn.sd <- calc.mean.and.sd(yst.20pc) 
+gmp.mn.sd <- calc.mean.and.sd(gmp) 
 ```
-This is clearly easier than writing `for` loops. This function can now be "banked" for use whenever its needed. Calculating row means and deviations can be done much faster.
+This is clearly easier than writing `for` loops every time. This function can now be "banked" for use whenever it is needed. However, you should avoid using for-loops etc altogether since R has some built in functions that are much quicker and tidier. Lets look at that now.
 
 ### 6- Apply
 
 'apply' is a commonly used function in R to speed up matrix calculation. For example, to calculates means of a matrix we can do this:
 
 ```{r}
-yst.20.pc.row.mn <- apply(yst.20pc,1,mean) # means of rows
-yst.20.pc.col.mn <- apply(yst.20pc,2,mean) # means of columns
+lthsc.row.mn <- apply(lthsc,1,mean) # means of rows
+lthsc.col.mn <- apply(lthsc,2,mean) # means of columns
 ```
 The format for the function is therefore the matrix first, the direction in which you would like to apply the function in the 3rd argument.
 
@@ -238,239 +275,176 @@ Your own functions can also be used with `apply` when used as the 3rd argument. 
 
 example.func <- function(v){
   
-  val <- (mean(v)*sd(v))/sum(v)
+  val <- (mean(v)*sd(v))/sum(v) ## This is a nonsense operation.
   val
 }
 
-ex.apply <- apply(yst.20pc,1,example.func)
+ex.apply <- apply(mep,1,example.func)
 
 ```
 
+Lets use the apply function to get the top 500 most variable genes in our HSPC dataset:
+```{r}
+gene.vars <- apply(hspc.data,1,var)
+top.var.genes <- names(rev(sort(gene.vars))[1:500])
+hspc.var <- hspc.data[top.var.genes,]
+```
 ### 7- Standardising data
 
-The data has already been normalised, and we can see this by boxplotting the expression values.
-
+Lets take a look at the range of the data, i.e getting the lowest and higest value in the matrix of variable genes we just made.
 ```{r}
-par(mar=c(10,5,5,5)) # this simply makes the gap at the bottom bigger so the labels fit
-boxplot(yst.20pc,las=2) # las rotates the x-axis lables by 90 degrees
+range(hspc.var)
 ```
 
-Looking at the y-axis we can see the data has a log expression range of about 2 to 14. We can be more precise by calling 'range'.
 
-```{r}
-range(yst.20pc)
-```
-
-For many operations (such as clustering) the data needs to be z-score normalised (scaled) first. When we scale data, each row of gene is standarised so that it's mean=0 and sd=1. Specifically for a gene `g` of the i-th row:
+For some operations (such as making heatmaps) the data needs to be z-score normalised (scaled) first. When we scale data, each row of gene is standarised so that it's mean=0 and sd=1. Specifically for a gene `g` of the i-th row:
 
 $$Z_i= \frac{g_i-\hat{g}}{\sigma_g}$$
 
 which means for each row we subtract the mean of the row, and then divide by the sd of the row.
 
-***Exercise:*** write a function called `zscore` which will take a single vector of values and scale them. When you have done this, `apply` this to the yeast data to scale all rows and call it `yst.zs`.
+***Exercise:*** write a function called `zscore` which will take a single vector of values and scale them. When you have done this, `apply` this to the `hspc.var` matrix to scale all rows and call it `hspc.zs`.
 ```{r, echo=FALSE}
 zscore <- function(v){
   z <- (v-mean(v))/sd(v)
   z
   }
 
-yst.zs <- apply(yst.20pc,1,zscore)
+hspc.zs <- apply(hspc.var,1,zscore)
 
 ```
 
 Now take a look at the first row of the normalised data. Call `nrow` on the matrix. Does it look right? 
 
 ```{r}
-yst.zs <- t(apply(yst.20pc,1,zscore))
-boxplot(yst.zs,las=2)
+hspc.zs <- t(apply(hspc.var,1,zscore))
+boxplot(hspc.zs,las=2)
+# compare to the original data
+boxplot(hspc.var,las=2)
 ```
 
-We can see now the data has been centralised around 0. This transformation is particularly useful when we want to cluster the data.
+We can see now the data has been centralised around 0.
+
 8- Clustering
 ====================
 
-Clustering is one of the most common visualisation techniques for expression data. Here we will learn how to do some basic clustering and plotting. The first thing we need to do is take the yeast data and reduce it a little first using some commands you have already learnt. 
-
-***Exercise:*** Plot a histogram of the expression values in the yeast data. Remove any row where the maximum value does not exceed a value of 7. When you have done this calculate the standard deviation of each row, and remove any gene where its sd is less than 0.5. Put the final reduced matrix into an object called `yst.20pc.filt`, and then zscore this data into an object called `yst.20pc.filt.z`. Hint: `apply` and `which` are your friends here.
-
-***Bonus exercise!:*** If you are done with the above, make a function to filter data which takes a mean and sd as variables.
-
-```{r}
-
-max.ind <- which(apply(yst.20pc,1,max)<7)
-sd.ind <-  which(apply(yst.20pc,1,sd)<0.5)
-
-rem.ind <- intersect(max.ind,sd.ind)
-
-yst.20pc.filt <- yst.20pc[-rem.ind,]
-yst.20pc.filt.z <- t(apply(yst.20pc.filt,1,zscore))
-
-```
-
-Lets cluster. R has many ways to do this, an many packages have been written specifically for array data. We are not going to use these for now, but concentrate on the basic functions which underly the more specialised packages. For example, the `gplots` package uses the `hclust` function which is provided by R. So we will use `hclust` for now.
+Clustering is one of the most common visualisation techniques for genes expression data. Here we will learn how to do some basic histograms/heatmaps and plotting. The first thing  
+R has many ways to do this, and many packages have been written specifically for array data. We are not going to use these for now, but concentrate on the basic underlying functions that do the maths. For example, the `gplots` package uses the `hclust` function which is provided by R. So we will use `hclust` for now.
 
 To use `hclust` we need to provide a distance matrix. This is done using the `dist` function:
 
 ```{r}
-yst.dst <- dist(yst.20pc.filt.z)
+hspc.dst <- dist(hspc.zs)
 ```
 
 The we cluster using `hclust`:
 
 ```{r}
-yst.hc <- hclust(yst.dst)
+hspc.hc <- hclust(hspc.dst)
 ```
 
 Plot the dendrogram:
 
 ```{r}
-plot(yst.hc)
+plot(hspc.hc)
 ```
 
-We can see this is pretty much useless. It is far to compact and doesn't really tell us anything. What we would like is to make a heatmap, and to do this we need to retrieve some information created by `hclust`
+You'll see form this what we have clustered are the genes. If you want to cluster the cells then you need to transpose the matrix using `t()`:
+```{r}
+hspc.dst <- dist(t(hspc.zs)) #transpose the matrix here!
+hspc.hc <- hclust(hspc.dst)
+plot(hspc.hc)
+```
+
+We can see this is pretty much useless. It is far to compact and doesn't really tell us anything. What we would like is to make a heatmap where the genes and samples are clusters, and to do this we need to retrieve some information created by `hclust`
 
 Call `names` to see which information is available in the newly created object:
 
 ```{r}
-names(yst.hc)
+names(hspc.hc)
 ```
 
 What we need here is the component called `order`. We can get this using the `$` assignment.
 
 ```{r}
-yst.hc$order[1:20] #just the first 20! remove `[1:20]` for the full vector
+hspc.hc$order
 ```
 
-We use this to reorder the z-scored matrix:
+This is the order the cells appear in form left to right when you plotted the dendrogram os cells ust before. We use this to reorder the z-scored matrix:
 
 ```{r}
-yst.hc.data <- yst.20pc.filt.z[yst.hc$order,]
+hspc.cell.clustered <- hspc.zs[,hspc.hc$order]
 ```
 
 To make a heatmap of the data call `image`:
 
 ```{r}
-image(yst.hc.data)
+image(hspc.cell.clustered)
 ```
-Ok, this doesn't look like it should! The matrix is the wrong way round, the colours aren't right, and there are no labels. The downside to R is that getting all this done takes time and knowledge of R's plotting capabilities. Thankfully people have already done this and put the code into pakages for people to download and use.
+Ok, this doesn't look like it should! The matrix is the wrong way round, the colours aren't right, and there are no labels. The downside to R is that getting all this done takes time and knowledge of R's plotting capabilities. Thankfully people have already done this and put the code into functions/packages for people to download and use.
 
-***Exercise:*** Install the `gplots` package.
+***Exercise:*** Install the `pheatmap` package.
 
 To use the functions provided by gplots we have to load it first:
 
 ```{r}
-library(gplots)
+library(pheatmap)
 ```
 
-We can now use the `heatmap.2` function which `gplots` provides:
+We can now use the `pheatmap` function that the package provides:
 ```{r}
-heatmap.2(yst.20pc.filt.z,col=greenred(20),trace="none",dendrogram=c("row"),Colv=FALSE)
+pheatmap(hspc.zs)
 ```
 
-***Exercise:*** Look/play with this command to work out what each of these options are.
-
-Clustering is pretty pointless if you can't define groups and get to the gene names. To do this we need to cut the dendrogram. We do this using the `cutree` function. For example, if we want 4 groups we do:
+The pheatmap function uses `hclust` to cluster the genes and cells and reorders the matrix according to both. Lets output this to a file:
 
 ```{r}
-yst.hc.4grp <- cutree(yst.hc,k=4)
+png("HSPC_heatmap.png",height=4500,width=1500)
+pheatmap(hspc.zs)
+dev.off()
 ```
+The file is opened, and the plot is then made. The `dev.off()` then closed and finalises the file, i.e nothing more can be written to it.
 
-This produces a vector showing which cluster each gene belongs to. If we are happy with this number of clusters we can make our lives a bit easier and put the data and the cluster assignments into the same object:
+***Exercise:*** call `help (pheatmap)` and see what options are available. Play with the options to see what they do.
+
+Clustering is pretty pointless if you can't define groups and get to the gene names. First we need to capture the output from `pheatmap` as a variable:
 
 ```{r}
-yst.lst <- list(data=yst.20pc.filt.z,cluster=yst.hc.4grp)
+hspc.clust <- pheatmap(hspc.zs)
 ```
-
-
-We can now plot all the genes which belong to cluster number 1 for example:
+Lets take a look at the contents of `hspc.clust`:
 ```{r}
-yst.c1 <- yst.lst$data[which(yst.lst$cluster==1),]
-plot(yst.c1[1,],ty="l",ylim=range(yst.c1))
-apply(yst.c1,1,lines)
+names(hspc.clust)
 ```
 
-***Exercise:*** Rewrite the code above into a function called `plot.cluster` so you can plot the genes of any given cluster.
-
-We can now write a function to plot all the clusters at the same time:
-
-
-```{r,echo=FALSE}
-
-plot.cluster <- function(m,clus){
-  
-  m.c1 <- m$data[which(m$cluster==clus),]
-  plot(m.c1[1,],ty="l",ylim=range(m.c1))
-  apply(m.c1,1,lines)
-}
-
-```
+What we want is the information contained within the hclust object in `tree_row`. We get this by treating it like a list:
 
 ```{r}
-plot.all.clusters <- function(m){
-
- cls <- ceiling(sqrt(max(m$cluster)))
- rs <- ceiling(max(m$cluster)/cls)
-
- par(mfrow=c(rs,cls)) 
-
- for(i in 1:max(m$cluster)){
-   plot.cluster(m,i)
- }
-}
-
+hspc.clust$tree_row
+hspc.clust$tree_row$order #the order of genes in the heatmap for examples.
 ```
 
-Now run it:
+Lets say that we want to split the genes in to 5 clusters groups, we can call the `cutree` function on an `hclust` object to do this:
+```{r}
+gene.clusters <- cutree(hspc.clust$tree_row,k=5)
+gene.clusters[1:20] # shows the results for the first 20 genes.
+table(gene.clusters)
+barplot(table(gene.clusters))
+```
+
+Lets isolate all the genes beloning to cluster 1 using the `which` command:
 
 ```{r}
-plot.all.clusters(yst.lst)
+which(gene.clusters==1)
 ```
-
-This doesn't look good. The black lines cross each other frequently making the overal pattern hard to see.
-
-***Exercise:*** Make two new functions based on the ones above which plot the clusters using boxplots instead of lines.
+We can isolate these rows only from our `hspc.zs` matrix as we did before:
 
 ```{r}
-plot.box.cluster <- function(m,clus){
-  
-  m.cl <- m$data[which(m$cluster==clus),]
-  
-  boxplot(m.cl,las=2)
-}
-
-plot.all.boxclusters <- function(m){
-
- cls <- ceiling(sqrt(max(m$cluster)))
- rs <- ceiling(max(m$cluster)/cls)
-
- par(mfrow=c(rs,cls)) 
-
- for(i in 1:max(m$cluster)){
-   plot.box.cluster(m,i)
- }
-}
-
-plot.all.boxclusters(yst.lst)
+hspc.cluster.1 <- hspc.zs[names(which(gene.clusters==1)),]
 ```
 
-Lets try a faster method for clustering called k-means. Here we need to specify up front how many clusters we are looking for.
+We can now see how these gene behave as a whole using a boxplot:
 
 ```{r}
-
-yst.km <- kmeans(yst.20pc.filt.z,9)
-yst.km.lst <- list(data=yst.20pc.filt.z,cluster=yst.km$cluster)
-plot.all.boxclusters(yst.km.lst)
-
+boxplot(hspc.cluster.1,las=2)
 ```
-
-We'll now learn about exporting figures from R. This can be done from Rstudio using the export function, but it is better not to use this. I will explian at a later date why, but this is how you code to output to a png file:
-
-```{r}
-
-png("Kmeans_boxplot.png",height=800,width=1000) #opens the file
-plot.all.boxclusters(yst.km.lst) #makes the plot and pipes it to the file
-dev.off() #closes the pipe and finalises the file
-
-```
-
-
