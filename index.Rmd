@@ -3,7 +3,6 @@ title: "Foundations of R programming I"
 author: "Shamit Soneji"
 date: "12/10/2018"
 output: rmarkdown::github_document
-code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
@@ -46,11 +45,15 @@ x <- 1:10
 x
 ```
 Much better. Using a comma will always do increments of 1, but is also bidirectional:
-
+<details><summary>CLICK ME</summary>
+<p>
 ```{r}
 y <- 5:-5
 y
 ```
+</p>
+</details>
+
 Another way of ceating a sequence of numbers is to use the `seq` function. To learn how this function works, issue the command `help(seq)`. In R you can get a manual for any function using the `help()` command. To generate a vector of numbers from 1 to 100 in steps of 10 we need:
 
 ```{r}
