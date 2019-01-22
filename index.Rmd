@@ -21,6 +21,8 @@ With respect to bioinformatics, the central repository for bioinformatics tools 
 
 Before we go on to these, we need to get to grips with the basics of the R language first.
 
+### Before we do anything, go to Session > Set Working Directory > Choose Directory and find the "RIworkshop" I asked you to make in an earlier email.
+
 ## R- The basics
 
 ### 1- Vectors
