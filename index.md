@@ -237,21 +237,21 @@ listex1$char
 listex1$nums
 ```
 
-    ##              [,1]        [,2]       [,3]        [,4]        [,5]
-    ## [1,] -0.516081970 -1.49598351  1.5328485 -1.90723984  1.10095987
-    ## [2,] -2.446756441  0.62344013  1.4983260 -1.00751926  1.96438008
-    ## [3,] -1.248490269  1.77981159  1.3654019 -0.07081908 -0.35754784
-    ## [4,] -0.409223314  0.57904590 -0.6222846 -0.17492763 -0.08351924
-    ## [5,] -0.453775300 -0.10398067  0.5053400  1.04763577  0.13766404
-    ## [6,] -0.009932937  0.23668259 -1.8445940  0.08833401  0.74692610
-    ## [7,]  0.858137078  0.74274471 -0.4352338  2.49108456 -1.30485917
-    ## [8,] -0.296642628 -0.05962456 -0.1901779  0.51200948  0.07060758
+    ##            [,1]       [,2]       [,3]       [,4]       [,5]
+    ## [1,]  0.5411378 -1.1078301  0.0615231 -0.7042265  0.1879346
+    ## [2,] -0.1067889 -0.8186695  0.5383642  1.2322466  1.4222991
+    ## [3,]  1.6617953 -0.1261685 -1.6464186 -2.4489938 -0.1226037
+    ## [4,]  0.4800044 -0.5870114 -0.0605121 -0.1361855 -0.1558800
+    ## [5,]  1.3106675 -0.1581960 -2.4975543 -1.3245611  1.1154836
+    ## [6,]  1.0167293  0.2497965  0.1877007 -1.1912111 -1.3895658
+    ## [7,] -2.1398875 -0.6539722 -0.6589315  0.4760210  0.5816673
+    ## [8,] -0.4349157  1.0967823 -0.2920229 -0.8925902 -1.1832576
 
 ``` r
 listex1$nums[1,] # the matrix within the list issubsetted as before
 ```
 
-    ## [1] -0.516082 -1.495984  1.532848 -1.907240  1.100960
+    ## [1]  0.5411378 -1.1078301  0.0615231 -0.7042265  0.1879346
 
 Another way of doing the above is:
 
@@ -265,21 +265,21 @@ listex1[[1]] # note the double square brackets
 listex1[[2]]
 ```
 
-    ##              [,1]        [,2]       [,3]        [,4]        [,5]
-    ## [1,] -0.516081970 -1.49598351  1.5328485 -1.90723984  1.10095987
-    ## [2,] -2.446756441  0.62344013  1.4983260 -1.00751926  1.96438008
-    ## [3,] -1.248490269  1.77981159  1.3654019 -0.07081908 -0.35754784
-    ## [4,] -0.409223314  0.57904590 -0.6222846 -0.17492763 -0.08351924
-    ## [5,] -0.453775300 -0.10398067  0.5053400  1.04763577  0.13766404
-    ## [6,] -0.009932937  0.23668259 -1.8445940  0.08833401  0.74692610
-    ## [7,]  0.858137078  0.74274471 -0.4352338  2.49108456 -1.30485917
-    ## [8,] -0.296642628 -0.05962456 -0.1901779  0.51200948  0.07060758
+    ##            [,1]       [,2]       [,3]       [,4]       [,5]
+    ## [1,]  0.5411378 -1.1078301  0.0615231 -0.7042265  0.1879346
+    ## [2,] -0.1067889 -0.8186695  0.5383642  1.2322466  1.4222991
+    ## [3,]  1.6617953 -0.1261685 -1.6464186 -2.4489938 -0.1226037
+    ## [4,]  0.4800044 -0.5870114 -0.0605121 -0.1361855 -0.1558800
+    ## [5,]  1.3106675 -0.1581960 -2.4975543 -1.3245611  1.1154836
+    ## [6,]  1.0167293  0.2497965  0.1877007 -1.1912111 -1.3895658
+    ## [7,] -2.1398875 -0.6539722 -0.6589315  0.4760210  0.5816673
+    ## [8,] -0.4349157  1.0967823 -0.2920229 -0.8925902 -1.1832576
 
 ``` r
 listex1[[2]][1,]
 ```
 
-    ## [1] -0.516082 -1.495984  1.532848 -1.907240  1.100960
+    ## [1]  0.5411378 -1.1078301  0.0615231 -0.7042265  0.1879346
 
 4- Reading and writing files
 ============================
@@ -385,7 +385,7 @@ write.table(lthsc,"LTHSC_data.txt",row.names=T,col.names=NA,sep="\t",quote=F)
 
 ***Exercise:*** Write out the data for the MEP and GMP data into two files.
 
-The data tables we have now are in the form of a data.frame. Try@
+The data tables we have now are in the form of a data.frame. Try:
 
 ``` r
 class(mep)
@@ -482,7 +482,27 @@ By putting this code into a function we can now calculate the means and deviatio
 gmp.mn.sd <- calc.mean.and.sd(gmp) 
 ```
 
-This is clearly easier than writing `for` loops every time. This function can now be "banked" for use whenever it is needed. However, you should avoid using for-loops etc altogether since R has some built in functions that are much quicker and tidier. Lets look at that now.
+Functions can also work with built in conditions:
+
+``` r
+animal.maths <- function(value1,value2,animal=c("pig","cow")){
+  
+  if(animal=="pig"){print(value1/value2)}
+  if(animal=="cow"){print(value1*value2)}
+  
+}
+animal.maths(5,5,"pig")
+```
+
+    ## [1] 1
+
+``` r
+animal.maths(5,5,"cow")
+```
+
+    ## [1] 25
+
+These functions can now be "banked" for use whenever they are needed (probably not `animal.maths` to be fair). However, you should avoid using for-loops etc altogether since R has some built in functions that are much quicker and tidier. Lets look at that now.
 
 ### 6- Apply
 
@@ -542,14 +562,14 @@ hspc.zs <- t(apply(hspc.var,1,zscore))
 boxplot(hspc.zs,las=2)
 ```
 
-![](index_files/figure-markdown_github/unnamed-chunk-33-1.png)
+![](index_files/figure-markdown_github/unnamed-chunk-34-1.png)
 
 ``` r
 # compare to the original data
 boxplot(hspc.var,las=2)
 ```
 
-![](index_files/figure-markdown_github/unnamed-chunk-33-2.png)
+![](index_files/figure-markdown_github/unnamed-chunk-34-2.png)
 
 We can see now the data has been centralised around 0.
 
@@ -557,7 +577,7 @@ We can see now the data has been centralised around 0.
 =============
 
 Clustering is one of the most common visualisation techniques for genes expression data. Here we will learn how to do some basic histograms/heatmaps and plotting. The first thing
-R has many ways to do this, and many packages have been written specifically for array data. We are not going to use these for now, but concentrate on the basic underlying functions that do the maths. For example, the `gplots` package uses the `hclust` function which is provided by R. So we will use `hclust` for now.
+R has many ways to do this, and many packages have been written specifically for expression data. We are not going to use these for now, but concentrate on the basic underlying functions that do the maths. For example, the `gplots` package uses the `hclust` function which is provided by R. So we will use `hclust` for now.
 
 To use `hclust` we need to provide a distance matrix. This is done using the `dist` function:
 
@@ -577,7 +597,7 @@ Plot the dendrogram:
 plot(hspc.hc)
 ```
 
-![](index_files/figure-markdown_github/unnamed-chunk-36-1.png)
+![](index_files/figure-markdown_github/unnamed-chunk-37-1.png)
 
 You'll see form this what we have clustered are the genes. If you want to cluster the cells then you need to transpose the matrix using `t()`:
 
@@ -587,7 +607,7 @@ hspc.hc <- hclust(hspc.dst)
 plot(hspc.hc)
 ```
 
-![](index_files/figure-markdown_github/unnamed-chunk-37-1.png)
+![](index_files/figure-markdown_github/unnamed-chunk-38-1.png)
 
 We can see this is pretty much useless. It is far to compact and doesn't really tell us anything. What we would like is to make a heatmap where the genes and samples are clusters, and to do this we need to retrieve some information created by `hclust`
 
@@ -628,7 +648,7 @@ To make a heatmap of the data call `image`:
 image(hspc.cell.clustered)
 ```
 
-![](index_files/figure-markdown_github/unnamed-chunk-41-1.png) Ok, this doesn't look like it should! The matrix is the wrong way round, the colours aren't right, and there are no labels. The downside to R is that getting all this done takes time and knowledge of R's plotting capabilities. Thankfully people have already done this and put the code into functions/packages for people to download and use.
+![](index_files/figure-markdown_github/unnamed-chunk-42-1.png) Ok, this doesn't look like it should! The matrix is the wrong way round, the colours aren't right, and there are no labels. The downside to R is that getting all this done takes time and knowledge of R's plotting capabilities. Thankfully people have already done this and put the code into functions/packages for people to download and use.
 
 ***Exercise:*** Install the `pheatmap` package.
 
@@ -644,7 +664,7 @@ We can now use the `pheatmap` function that the package provides:
 pheatmap(hspc.zs)
 ```
 
-![](index_files/figure-markdown_github/unnamed-chunk-43-1.png)
+![](index_files/figure-markdown_github/unnamed-chunk-44-1.png)
 
 The pheatmap function uses `hclust` to cluster the genes and cells and reorders the matrix according to both. Lets output this to a file:
 
@@ -667,7 +687,7 @@ Clustering is pretty pointless if you can't define groups and get to the gene na
 hspc.clust <- pheatmap(hspc.zs)
 ```
 
-![](index_files/figure-markdown_github/unnamed-chunk-45-1.png) Lets take a look at the contents of `hspc.clust`:
+![](index_files/figure-markdown_github/unnamed-chunk-46-1.png) Lets take a look at the contents of `hspc.clust`:
 
 ``` r
 names(hspc.clust)
@@ -752,7 +772,7 @@ table(gene.clusters)
 barplot(table(gene.clusters))
 ```
 
-![](index_files/figure-markdown_github/unnamed-chunk-48-1.png)
+![](index_files/figure-markdown_github/unnamed-chunk-49-1.png)
 
 Lets isolate all the genes beloning to cluster 1 using the `which` command:
 
@@ -809,4 +829,4 @@ We can now see how these gene behave as a whole using a boxplot:
 boxplot(hspc.cluster.1,las=2)
 ```
 
-![](index_files/figure-markdown_github/unnamed-chunk-51-1.png)
+![](index_files/figure-markdown_github/unnamed-chunk-52-1.png)

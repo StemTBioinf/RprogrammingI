@@ -174,7 +174,7 @@ write.table(lthsc,"LTHSC_data.txt",row.names=T,col.names=NA,sep="\t",quote=F)
 
 ***Exercise:*** Write out the data for the MEP and GMP data into two files.
 
-The data tables we have now are in the form of a data.frame. Try@
+The data tables we have now are in the form of a data.frame. Try:
 
 ```{r}
 class(mep)
@@ -256,7 +256,24 @@ By putting this code into a function we can now calculate the means and deviatio
 ```{r}
 gmp.mn.sd <- calc.mean.and.sd(gmp) 
 ```
-This is clearly easier than writing `for` loops every time. This function can now be "banked" for use whenever it is needed. However, you should avoid using for-loops etc altogether since R has some built in functions that are much quicker and tidier. Lets look at that now.
+
+Functions can also work with built in conditions:
+
+```{r}
+animal.maths <- function(value1,value2,animal=c("pig","cow")){
+  
+  if(animal=="pig"){print(value1/value2)}
+  if(animal=="cow"){print(value1*value2)}
+  
+}
+animal.maths(5,5,"pig")
+animal.maths(5,5,"cow")
+
+```
+
+
+
+These functions can now be "banked" for use whenever they are needed (probably not `animal.maths` to be fair). However, you should avoid using for-loops etc altogether since R has some built in functions that are much quicker and tidier. Lets look at that now.
 
 ### 6- Apply
 
@@ -309,10 +326,9 @@ which means for each row we subtract the mean of the row, and then divide by the
 zscore <- function(v){
   z <- (v-mean(v))/sd(v)
   z
-  }
+}
 
 hspc.zs <- apply(hspc.var,1,zscore)
-
 ```
 
 Now take a look at the first row of the normalised data. Call `nrow` on the matrix. Does it look right? 
@@ -330,7 +346,7 @@ We can see now the data has been centralised around 0.
 ====================
 
 Clustering is one of the most common visualisation techniques for genes expression data. Here we will learn how to do some basic histograms/heatmaps and plotting. The first thing  
-R has many ways to do this, and many packages have been written specifically for array data. We are not going to use these for now, but concentrate on the basic underlying functions that do the maths. For example, the `gplots` package uses the `hclust` function which is provided by R. So we will use `hclust` for now.
+R has many ways to do this, and many packages have been written specifically for expression data. We are not going to use these for now, but concentrate on the basic underlying functions that do the maths. For example, the `gplots` package uses the `hclust` function which is provided by R. So we will use `hclust` for now.
 
 To use `hclust` we need to provide a distance matrix. This is done using the `dist` function:
 
